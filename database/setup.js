@@ -78,6 +78,8 @@ const Assignment = db.define('Assignment', {
     }
 });
 
+
+
 const StudySession = db.define('StudySession', {
     id: {
         type: DataTypes.INTEGER,
@@ -136,6 +138,7 @@ initializeDatabase();
 
 // Export everything
 module.exports = {
+    db,
     Sequelize,
     User,
     Course,

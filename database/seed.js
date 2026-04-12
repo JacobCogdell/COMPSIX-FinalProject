@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
-const { db, User, Task } = require('./setup');
+const { db, User, Course, Assignment, StudySession } = require('./setup');
+
 
 async function seedDatabase() {
     try {
@@ -11,108 +12,208 @@ async function seedDatabase() {
         const hashedPassword = await bcrypt.hash('password123', 10);
         
         const users = await User.bulkCreate([
+            // Create 2 Teacher Users
             {
-                name: 'John Doe',
-                email: 'john@example.com',
-                password: hashedPassword
+                name: 'Prof. John Doe',
+                email: 'john@school.com',
+                password: hashedPassword,
+                role: 'teacher'
             },
             {
-                name: 'Jane Smith',
-                email: 'jane@example.com',
-                password: hashedPassword
+                name: 'Prof. Jane Smith',
+                email: 'jane@school.com',
+                password: hashedPassword,
+                role: 'teacher'
+            },
+            // Create 4 Student Users
+            {
+                name: 'Mike Wheeler',
+                email: 'mike@school.com',
+                password: hashedPassword,
+                role: 'student'
             },
             {
-                name: 'Mike Johnson',
-                email: 'mike@example.com',
-                password: hashedPassword
+                name: 'Nancy Wheeler',
+                email: 'nancy@school.com',
+                password: hashedPassword,
+                role: 'student'
+            },
+            {
+                name: 'Dustin Henderson',
+                email: 'dustin@school.com',
+                password: hashedPassword,
+                role: 'student'
+            },
+            {
+                name: 'Lucas Sinclair',
+                email: 'lucas@school.com',
+                password: hashedPassword,
+                role: 'student'
+            }
+        ]);
+        const [profjohn, profjane, mike, nancy, dustin, lucas] = users;
+
+
+        // Create sample courses
+        const courses = await Course.bulkCreate([
+            {
+                courseName: 'Computer Science 101',
+                teacherName: profjohn.name,
+                semester: 'Fall 2026',
+                teacherId: profjohn.id
+            },
+            {
+                courseName: 'Physics 201',
+                teacherName: profjane.name,
+                semester: 'Fall 2026',
+                teacherId: profjane.id
+            },
+            {
+                courseName: 'Computer Science 102',
+                teacherName: profjohn.name,
+                semester: 'Fall 2026',
+                teacherId: profjohn.id
+            },
+            {
+                courseName: 'Physics 202',
+                teacherName: profjane.name,
+                semester: 'Fall 2026',
+                teacherId: profjane.id
+            },
+            {
+                courseName: 'Physics 203',
+                teacherName: profjane.name,
+                semester: 'Fall 2026',
+                teacherId: profjane.id
+            }
+        ]);
+        const [cs101, phy201, cs102, phy202, phy203] = courses;
+
+        const assignments = await Assignment.bulkCreate([
+            // CS101 Assignments
+            {
+                title: 'Python Hello World',
+                description: 'Create a basic python program that prints "Hello, World!"',
+                dueDate: new Date('2026-09-20'),
+                courseId: cs101.id
+            },
+            {
+                title: 'Python Calculator',
+                description: 'Create a simple Python calculator with basic operations.',
+                dueDate: new Date('2026-09-20'),
+                courseId: cs101.id
+            },
+            // PHY201 Assignments
+            {
+                title: 'Newtons Laws Lab',
+                description: 'Conduct an experiment to verify Newtons laws of motion.',
+                dueDate: new Date('2026-09-20'),
+                courseId: phy201.id
+            },
+            {
+                title: 'Projectile Motion',
+                description: 'Analyze the projectile motion of a launched object.',
+                dueDate: new Date('2026-09-20'),
+                courseId: phy201.id
+            },
+            // CS102 Assignments
+            {
+                title: 'JavaScript DOM Manipulation',
+                description: 'Create a web page that allows users to manipulate the DOM using JavaScript.',
+                dueDate: new Date('2026-09-20'),
+                courseId: cs102.id
+            },
+            {
+                title: 'JavaScript To-Do List',
+                description: 'Build a simple to-do list application using JavaScript.',
+                dueDate: new Date('2026-09-20'),
+                courseId: cs102.id
+            },
+            // PHY202 Assignments
+            {
+                title: 'Electric Circuits Lab',
+                description: 'Build and analyze simple electric circuits.',
+                dueDate: new Date('2026-09-20'),
+                courseId: phy202.id
+            },
+            {
+                title: 'Magnetism Experiment',
+                description: 'Investigate the properties of magnets and magnetic fields.',
+                dueDate: new Date('2026-09-20'),
+                courseId: phy202.id
+            },
+            // PHY203 Assignments
+            {
+                title: 'Thermodynamics Lab',
+                description: 'Study the principles of thermodynamics through experiments.',
+                dueDate: new Date('2026-09-20'),
+                courseId: phy203.id
+            },
+            {
+                title: 'Optics Experiment',
+                description: 'Explore the behavior of light and optics.',
+                dueDate: new Date('2026-09-20'),
+                courseId: phy203.id
+            }   
+        ]);
+    
+        // Create study sessions
+        const studySessions = await StudySession.bulkCreate([
+            {
+                startTime: new Date('2026-09-15T14:00:00'),
+                endTime: new Date('2026-09-15T16:00:00'),
+                notes: 'Studied for CS101 Python assignment',
+                userId: mike.id,
+                courseId: cs101.id
+            },
+            {
+                startTime: new Date('2026-09-16T10:00:00'),
+                endTime: new Date('2026-09-16T12:00:00'),
+                notes: 'Reviewed Newtons Laws for PHY201',
+                userId: nancy.id,
+                courseId: phy201.id
+            },
+            {
+                startTime: new Date('2026-09-17T18:00:00'),
+                endTime: new Date('2026-09-17T20:00:00'),
+                notes: 'Worked on JavaScript To-Do List for CS102',
+                userId: dustin.id,
+                courseId: cs102.id
+            },
+            {
+                startTime: new Date('2026-09-18T15:00:00'),
+                endTime: new Date('2026-09-18T17:00:00'),
+                notes: 'Prepared for Electric Circuits Lab in PHY202',
+                userId: lucas.id,
+                courseId: phy202.id
+             },
+            {
+                startTime: new Date('2026-09-19T10:00:00'),
+                endTime: new Date('2026-09-19T12:00:00'),
+                notes: 'Studied Thermodynamics for PHY203',
+                userId: mike.id,
+                courseId: phy203.id
             }
         ]);
 
-        // Create sample tasks
-        await Task.bulkCreate([
-            // John's tasks
-            {
-                title: 'Complete project documentation',
-                description: 'Write comprehensive documentation for the API project',
-                priority: 'high',
-                completed: false,
-                userId: users[0].id
-            },
-            {
-                title: 'Review code changes',
-                description: 'Review pull requests from team members',
-                priority: 'medium',
-                completed: true,
-                userId: users[0].id
-            },
-            {
-                title: 'Update dependencies',
-                description: 'Update all npm packages to latest versions',
-                priority: 'low',
-                completed: false,
-                userId: users[0].id
-            },
-            
-            // Jane's tasks
-            {
-                title: 'Design new user interface',
-                description: 'Create mockups for the new dashboard design',
-                priority: 'high',
-                completed: false,
-                userId: users[1].id
-            },
-            {
-                title: 'Test API endpoints',
-                description: 'Perform comprehensive testing of all API endpoints',
-                priority: 'medium',
-                completed: false,
-                userId: users[1].id
-            },
-            {
-                title: 'Setup CI/CD pipeline',
-                description: 'Configure automated testing and deployment',
-                priority: 'high',
-                completed: true,
-                userId: users[1].id
-            },
-            
-            // Mike's tasks
-            {
-                title: 'Database optimization',
-                description: 'Optimize database queries for better performance',
-                priority: 'medium',
-                completed: false,
-                userId: users[2].id
-            },
-            {
-                title: 'Security audit',
-                description: 'Perform security audit of the application',
-                priority: 'high',
-                completed: false,
-                userId: users[2].id
-            },
-            {
-                title: 'Write unit tests',
-                description: 'Add unit tests for all API endpoints',
-                priority: 'medium',
-                completed: true,
-                userId: users[2].id
-            },
-            {
-                title: 'Deploy to production',
-                description: 'Deploy the application to production environment',
-                priority: 'high',
-                completed: false,
-                userId: users[2].id
-            }
-        ]);
+        // Enroll students in courses
+        await cs101.addStudents([mike, nancy]);
+        await phy201.addStudents([nancy, dustin]);
+        await cs102.addStudents([dustin, lucas]);
+        await phy202.addStudents([lucas, mike]);
+        await phy203.addStudents([mike, nancy]);
 
         console.log('Database seeded successfully!');
         console.log('Sample users created:');
-        console.log('- john@example.com / password123');
-        console.log('- jane@example.com / password123');
-        console.log('- mike@example.com / password123');
-        console.log('Total tasks created:', await Task.count());
+        console.log('- john@school.com / password123');
+        console.log('- jane@school.com / password123');
+        console.log('- mike@school.com / password123');
+        console.log('- nancy@school.com / password123');
+        console.log('- dustin@school.com / password123');
+        console.log('- lucas@school.com / password123');
+        console.log('Total courses created:', await Course.count());
+        console.log('Total assignments created:', await Assignment.count());
+        console.log('Total study sessions created:', await StudySession.count());
         
     } catch (error) {
         console.error('Error seeding database:', error);
