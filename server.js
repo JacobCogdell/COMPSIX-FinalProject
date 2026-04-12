@@ -16,8 +16,22 @@ const courseRoutes = require('./routes/courses');
 const assignmentRoutes = require('./routes/assignments');
 const studySessionRoutes = require('./routes/studySessions');
 
+// Logging middleware
+function LogRequest(req, res, next) {
+    const timestamp = new Date().toISOString();
+    console.log(`Timestamp: ${timestamp}`);
+    console.log(`Method: ${req.method}`);
+    console.log(`URL: ${req.originalUrl}`);
+    if (req.method === "POST" || req.method === "PUT") {
+        console.log("Request Body:", req.body);
+    }
+    next();
+}
+
 const cors = require('cors');
 app.use(cors());
+app.use(LogRequest);
+
 
 // JWT Authentication Middleware
 function requireAuth(req, res, next) {
