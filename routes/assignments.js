@@ -1,22 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const { Assignment } = require('../setup');
+const { requireAuth, requireTeacher } = require('../middleware/auth');
 
-// GET all assignments
-router.get('/', async (req, res) => {
+
+// GET all assignments, requires authentication
+router.get('/', requireAuth, async (req, res) => {
     const assignments = await Assignment.findAll();
     res.status(200).json(assignments);
 });
 
-// GET assignment by ID
-router.get('/:id', async (req, res) => {
+// GET assignment by ID, requires authentication
+router.get('/:id', requireAuth, async (req, res) => {
     const assignment = await Assignment.findByPk(req.params.id);
     if (!assignment) return res.status(404).json({ error: 'Assignment not found' });
     res.status(200).json(assignment);
 });
 
-// POST create assignment
-router.post('/', async (req, res) => {
+// POST create assignment, requires authentication and teacher role
+router.post('/', requireAuth, requireTeacher, async (req, res) => {
     try {
         const { title, dueDate, courseId } = req.body;
 
@@ -32,8 +34,8 @@ router.post('/', async (req, res) => {
     }
 });
 
-// PUT update assignment
-router.put('/:id', async (req, res) => {
+// PUT update assignment, requires authentication and teacher role
+router.put('/:id', requireAuth, requireTeacher, async (req, res) => {
     const assignment = await Assignment.findByPk(req.params.id);
     if (!assignment) return res.status(404).json({ error: 'Assignment not found' });
 
@@ -41,8 +43,8 @@ router.put('/:id', async (req, res) => {
     res.status(200).json(assignment);
 });
 
-// DELETE assignment
-router.delete('/:id', async (req, res) => {
+// DELETE assignment, requires authentication and teacher role
+router.delete('/:id', requireAuth, requireTeacher, async (req, res) => {
     const assignment = await Assignment.findByPk(req.params.id);
     if (!assignment) return res.status(404).json({ error: 'Assignment not found' });
 

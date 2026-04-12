@@ -66,6 +66,25 @@ function requireAuth(req, res, next) {
     }
 }
 
+// Role-based access control middleware
+function requireTeacher(req, res, next) {
+    if (!req.user || req.user.role !== 'teacher') {
+        return res.status(403).json({
+            error: 'Access denied. Teacher role required.'
+        });
+    }
+    next();
+}
+
+function requireStudent(req, res, next) {
+    if (!req.user || req.user.role !== 'student') {
+        return res.status(403).json({
+            error: 'Access denied. Student role required.'
+        });
+    }
+    next();
+}
+
 // Test database connection
 async function testConnection() {
     try {
@@ -193,7 +212,8 @@ app.post('/api/login', async (req, res) => {
             { 
                 id: user.id, 
                 name: user.name, 
-                email: user.email 
+                email: user.email, 
+                role: user.role
             },
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRES_IN }

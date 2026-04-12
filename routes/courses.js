@@ -1,22 +1,23 @@
 const express = require('express');
 const router = express.Router();
 const { Course } = require('../setup');
+const { requireAuth, requireTeacher } = require('../middleware/auth');
 
-// GET all courses
-router.get('/', async (req, res) => {
+// GET all courses, requires authentication
+router.get('/', requireAuth, async (req, res) => {
     const courses = await Course.findAll();
     res.status(200).json(courses);
 });
 
-// GET course by ID
-router.get('/:id', async (req, res) => {
+// GET course by ID, requires authentication
+router.get('/:id', requireAuth, async (req, res) => {
     const course = await Course.findByPk(req.params.id);
     if (!course) return res.status(404).json({ error: 'Course not found' });
     res.status(200).json(course);
 });
 
-// POST create course
-router.post('/', async (req, res) => {
+// POST create course, requires authentication and teacher role
+router.post('/', requireAuth,requireTeacher, async (req, res) => {
     try {
         const { courseName, teacherName, semester, teacherId } = req.body;
 
@@ -32,8 +33,8 @@ router.post('/', async (req, res) => {
     }
 });
 
-// PUT update course
-router.put('/:id', async (req, res) => {
+// PUT update course, requires authentication and teacher role
+router.put('/:id', requireAuth, requireTeacher, async (req, res) => {
     const course = await Course.findByPk(req.params.id);
     if (!course) return res.status(404).json({ error: 'Course not found' });
 
@@ -41,8 +42,8 @@ router.put('/:id', async (req, res) => {
     res.status(200).json(course);
 });
 
-// DELETE course
-router.delete('/:id', async (req, res) => {
+// DELETE course, requires authentication and teacher role
+router.delete('/:id', requireAuth, requireTeacher, async (req, res) => {
     const course = await Course.findByPk(req.params.id);
     if (!course) return res.status(404).json({ error: 'Course not found' });
 
