@@ -9,7 +9,8 @@ beforeAll(async () => {
   await request(app).post('/api/register').send({
     name: "Student",
     email: "stud2@example.com",
-    password: "password123"
+    password: "password123",
+    role: "student"
   });
 
   const login = await request(app).post('/api/login').send({
@@ -23,7 +24,8 @@ beforeAll(async () => {
   await request(app).post('/api/register').send({
     name: "Teacher",
     email: "teach3@example.com",
-    password: "password123"
+    password: "password123",
+    role: "teacher"
   });
 
   const teacherLogin = await request(app).post('/api/login').send({

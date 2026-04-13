@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { StudySession } = require('../setup');
+const { StudySession } = require('../database/setup');
 const { requireAuth, requireStudent } = require('../middleware/auth');
 
 // GET all study sessions, requires authentication

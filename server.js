@@ -84,7 +84,7 @@ app.get('/', (req, res) => {
 // POST /api/register - Register new user
 app.post('/api/register', async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password, role } = req.body;
         
         // Validate input
         if (!name || !email || !password) {
@@ -108,7 +108,8 @@ app.post('/api/register', async (req, res) => {
         const newUser = await User.create({
             name,
             email,
-            password: hashedPassword
+            password: hashedPassword,
+            role: role || 'student' // Default to student if role not provided
         });
         
         res.status(201).json({
@@ -116,7 +117,8 @@ app.post('/api/register', async (req, res) => {
             user: {
                 id: newUser.id,
                 name: newUser.name,
-                email: newUser.email
+                email: newUser.email,
+                role: newUser.role
             }
         });
         

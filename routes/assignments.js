@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Assignment } = require('../setup');
+const { Assignment } = require('../database/setup');
 const { requireAuth, requireTeacher } = require('../middleware/auth');
 
 
