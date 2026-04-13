@@ -3,10 +3,13 @@ require('dotenv').config();
 
 // Initialize database connection
 const db = new Sequelize({
-    dialect: 'sqlite',
-    storage: `database/${process.env.DB_NAME}` || 'study.db',
+    dialect: process.env.DB_DIALECT,
+    storage: process.env.DB_STORAGE,
     logging: false
 });
+
+// Log database info
+console.log(`Using database: ${process.env.DB_STORAGE} (${process.env.NODE_ENV})`);
 
 // User Model
 const User = db.define('User', {

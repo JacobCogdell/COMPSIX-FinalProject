@@ -32,59 +32,6 @@ const cors = require('cors');
 app.use(cors());
 app.use(LogRequest);
 
-
-// JWT Authentication Middleware
-function requireAuth(req, res, next) {
-    const authHeader = req.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ 
-            error: 'Access denied. No token provided.' 
-        });
-    }
-    
-    const token = authHeader.substring(7);
-    
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
-        next();
-    } catch (error) {
-        if (error.name === 'TokenExpiredError') {
-            return res.status(401).json({ 
-                error: 'Token expired. Please log in again.' 
-            });
-        } else if (error.name === 'JsonWebTokenError') {
-            return res.status(401).json({ 
-                error: 'Invalid token. Please log in again.' 
-            });
-        } else {
-            return res.status(401).json({ 
-                error: 'Token verification failed.' 
-            });
-        }
-    }
-}
-
-// Role-based access control middleware
-function requireTeacher(req, res, next) {
-    if (!req.user || req.user.role !== 'teacher') {
-        return res.status(403).json({
-            error: 'Access denied. Teacher role required.'
-        });
-    }
-    next();
-}
-
-function requireStudent(req, res, next) {
-    if (!req.user || req.user.role !== 'student') {
-        return res.status(403).json({
-            error: 'Access denied. Student role required.'
-        });
-    }
-    next();
-}
-
 // Test database connection
 async function testConnection() {
     try {
@@ -258,9 +205,13 @@ app.use((req, res) => {
     });
 });
 
-// Start server
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on port ${PORT}`);
+module.exports = app;
+
+// Only start server if not in test mode
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(process.env.PORT, () => {
+    console.log(`Server running on port ${process.env.PORT}`);
     console.log(`Environment: ${process.env.NODE_ENV}`);
-    console.log(`Health check: ${PORT}/health`);
-});
+    console.log(`Health check: http://localhost:${process.env.PORT}/health`);
+  });
+}
