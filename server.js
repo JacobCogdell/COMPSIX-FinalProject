@@ -146,7 +146,7 @@ app.post('/api/login', async (req, res) => {
         const user = await User.findOne({ where: { email } });
         if (!user) {
             return res.status(401).json({ 
-                error: 'Invalid email or password user' 
+                error: 'Invalid email or password' 
             });
         }
         
@@ -154,7 +154,7 @@ app.post('/api/login', async (req, res) => {
         const isValidPassword = await bcrypt.compare(password, user.password);
         if (!isValidPassword) {
             return res.status(401).json({ 
-                error: 'Invalid email or password passwrd' 
+                error: 'Invalid email or password' 
             });
         }
         

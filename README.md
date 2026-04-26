@@ -3,35 +3,61 @@ Study Planner API
 
 A RESTful backend for managing users, courses, assignments, and study sessions. Built with Node.js, Express, Sequelize, and JWT authentication.
 
+LIVE DEPLOYMENT: https://jcogdell-study-planner-api.onrender.com
+
 Project Overview
 
 This API supports:
 
-User registration and login
+- User registration and login with secure password hashing
+- JWT-Based authentication for protected routes
+- Role-based access control (teacher vs student)
+- CRUD operations for Users, Courses, Assignments, and Study Sessions
+- Sequelize ORM with SQLite
+- Comprehensive Test Suite
 
-Role-based access control (teacher vs student)
+Roles & Permissions
 
-CRUD operations for Users, Courses, Assignments, and Study Sessions
+The API enforces two user roles with distinct access levels:
 
-JWT authentication
+| Resource         | Action             | Teacher | Student |
+|------------------|--------------------|---------|---------|
+| *Users*          | View all users     |   ✅    |   ❌   |
+| *Users*          | View own profile   |   ✅    |   ✅   |
+| *Users*          | Create user        |   ✅    |   ❌   |
+| *Users*          | Update own profile |   ✅    |   ✅   |
+| *Users*          | Delete user        |   ✅    |   ❌   |
+| *Courses*        | View courses       |   ✅    |   ✅   |
+| *Courses*        | Create/Update/Del  |   ✅    |   ❌   |
+| *Assignments*    | View assignments   |   ✅    |   ✅   |
+| *Assignments*    | Create/Update/Del  |   ✅    |   ❌   |
+| *Study Sessions* | View all sessions  |   ✅    |   ❌ (own only) |
+| *Study Sessions* | Create/Update/Del  |   ❌    |   ✅ (own only) |
 
-Sequelize ORM with SQLite (or other SQL engines)
+Ownership rules:
+- Students can only view and modify their own user profile
+- Students can only view, update, and delete their own study sessions
+- Teachers can view any user profile and any study session
 
 Setup Instructions
 
 1. Install dependencies
-
 npm install
 
 2. Create a .env file
 
 PORT=3000
+DB_DIALECT=sqlite
+DB_STORAGE=./database/studyplanner_dev.db
 JWT_SECRET=your_secret_here
 JWT_EXPIRES_IN=1d
-DATABASE_URL=./database/studyplanner_dev.db
 NODE_ENV=development
 
-3. Start the server
+3. Set Up and Seed the Database
+npm run setup
+npm run seed
+
+4. Start the server
 
 npm start
 
@@ -39,7 +65,7 @@ Server runs at:
 
 http://localhost:3000
 
-4. Run tests
+5. Run tests
 
 npm test
 
@@ -200,3 +226,50 @@ Testing
 Run all tests:
 
 npm test
+
+Error Responses 
+
+| Status Code | Meaning | Example |
+| ----------- | ------- | --- |
+| 400         | Bad request / validation error 
+| 401         | Unauthorized / missing or invalid token 
+| 403         | Forbidden / insufficient role or ownership 
+| 404         | Resource not found 
+| 500         | Internal server error 
+
+The database comes pre-seeded with sample data for testing:
+
+Users (password for all: password123)
+
+Name	Email	Role
+Prof. John Doe	john@school.com	teacher
+Prof. Jane Smith	jane@school.com	teacher
+Mike Wheeler	mike@school.com	student
+Nancy Wheeler	nancy@school.com	student
+Dustin Henderson	dustin@school.com	student
+Lucas Sinclair	lucas@school.com	student
+
+Courses: Computer Science 101, Physics 201, Computer Science 102, Physics 202, Physics 203
+
+Postman Documentation
+A complete Postman collection with example requests and responses for all endpoints is available:
+
+https://jacobcogdell-9420481.postman.co/workspace/Jacob-Cogdell's-Workspace~37248d7c-78c2-4b37-8e58-630a4b21f735/collection/52608116-92995659-e444-4ad6-ac1f-fd6fe89bc61c
+
+## Using Authentication
+
+Most endpoints require a valid JWT token. Here's how to use it:
+
+1. **Register** a user via `POST /api/register`
+2. **Log in** via `POST /api/login` — the response includes a `token` field
+3. **Include the token** in all subsequent requests using the `Authorization` header:
+
+
+## Deployment Notes
+
+This API is deployed on Render's free tier:
+
+- The free instance spins down after 15 minutes of inactivity. 
+- The SQLite database resets on each deploy 
+- Auto-deploy is enabled — every push to main triggers a fresh build and reseed.
+
