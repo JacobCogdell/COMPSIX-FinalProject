@@ -178,15 +178,25 @@ Assignments Endpoints
 
 Teacher role required for create, update, delete.
 
-GET /api/assignments
+GET /api/assignments — Returns all assignments
+GET /api/assignments/:id — Returns a single assignment
 
-GET /api/assignments/:id
+POST /api/assignments (Teacher Only)
 
-POST /api/assignments
+Body:
 
-PUT /api/assignments/:id
+title: string
+description: string
+dueDate: ISO timestamp
+courseId: number
 
-DELETE /api/assignments/:id
+Response (201):
+
+{ id, title, description, dueDate, courseId }
+
+PUT /api/assignments/:id (Teacher Only) — Updates an assignment
+DELETE /api/assignments/:id (Teacher Only) — Deletes an assignment
+
 
 Study Sessions Endpoints
 
@@ -229,25 +239,26 @@ npm test
 
 Error Responses 
 
-| Status Code | Meaning | Example |
-| ----------- | ------- | --- |
-| 400         | Bad request / validation error 
-| 401         | Unauthorized / missing or invalid token 
-| 403         | Forbidden / insufficient role or ownership 
-| 404         | Resource not found 
-| 500         | Internal server error 
+| Status Code | Meaning                                    |
+| ----------- | ------------------------------------------ | 
+| 400         | Bad request / validation error             |
+| 401         | Unauthorized / missing or invalid token    |
+| 403         | Forbidden / insufficient role or ownership |
+| 404         | Resource not found                         |
+| 500         | Internal server error                      |
 
 The database comes pre-seeded with sample data for testing:
 
 Users (password for all: password123)
 
-Name	Email	Role
-Prof. John Doe	john@school.com	teacher
-Prof. Jane Smith	jane@school.com	teacher
-Mike Wheeler	mike@school.com	student
-Nancy Wheeler	nancy@school.com	student
-Dustin Henderson	dustin@school.com	student
-Lucas Sinclair	lucas@school.com	student
+| Name	           | Email             |	Role        |
+| ---------------- | ----------------- | ------------ |
+| Prof. John Doe   | john@school.com   | teacher      |
+| Prof. Jane Smith | jane@school.com   | teacher      |
+| Mike Wheeler     | mike@school.com   | student      |
+| Nancy Wheeler    | nancy@school.com  | student      |
+| Dustin Henderson | dustin@school.com | student      |
+| Lucas Sinclair   | lucas@school.com  | student      |
 
 Courses: Computer Science 101, Physics 201, Computer Science 102, Physics 202, Physics 203
 
@@ -263,6 +274,8 @@ Most endpoints require a valid JWT token. Here's how to use it:
 1. **Register** a user via `POST /api/register`
 2. **Log in** via `POST /api/login` — the response includes a `token` field
 3. **Include the token** in all subsequent requests using the `Authorization` header:
+   `Authorization: Bearer <your_token_here>`
+4. **Log out** via `POST /api/logout` — then delete the token on the client side
 
 
 ## Deployment Notes

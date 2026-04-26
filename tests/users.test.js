@@ -59,4 +59,12 @@ describe('User Registration & Login', () => {
     expect(res.statusCode).toBe(401);
   });
 
+  test('POST /api/logout - logs out successfully', async () => {
+    const res = await request(app)
+      .post('/api/logout')
+      .set('Authorization', `Bearer ${teacherToken}`);
+    expect(res.statusCode).toBe(200);
+    expect(res.body.message).toContain('Logout successful');
+  });
+  
 });
