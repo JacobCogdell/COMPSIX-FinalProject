@@ -1,8 +1,10 @@
 const request = require('supertest');
 const app = require('../server');
+const { User } = require('../database/setup');
 
 let teacherToken;
 let studentToken;
+let teacherRecord;
 
 beforeAll(async () => {
   // Create teacher
@@ -17,6 +19,8 @@ beforeAll(async () => {
     email: "teacher@example.com",
     password: "password123"
   });
+
+  teacherRecord = await User.findOne({ where: { email: "teacher@example.com" } });
 
   teacherToken = teacherLogin.body.token;
 
@@ -46,7 +50,7 @@ describe('Courses CRUD', () => {
         courseName: "Biology 101",
         teacherName: "Teacher",
         semester: "Fall",
-        teacherId: 1
+        teacherId: teacherRecord.id
       });
 
     expect(res.statusCode).toBe(201);
@@ -60,7 +64,7 @@ describe('Courses CRUD', () => {
         courseName: "Chemistry",
         teacherName: "Teacher",
         semester: "Fall",
-        teacherId: 1
+        teacherId: teacherRecord.id
       });
 
     expect(res.statusCode).toBe(403);

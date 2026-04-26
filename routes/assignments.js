@@ -6,15 +6,23 @@ const { requireAuth, requireTeacher } = require('../middleware/auth');
 
 // GET all assignments, requires authentication
 router.get('/', requireAuth, async (req, res) => {
-    const assignments = await Assignment.findAll();
-    res.status(200).json(assignments);
+    try {
+        const assignments = await Assignment.findAll();
+        res.status(200).json(assignments);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // GET assignment by ID, requires authentication
 router.get('/:id', requireAuth, async (req, res) => {
-    const assignment = await Assignment.findByPk(req.params.id);
-    if (!assignment) return res.status(404).json({ error: 'Assignment not found' });
-    res.status(200).json(assignment);
+    try {
+        const assignment = await Assignment.findByPk(req.params.id);
+        if (!assignment) return res.status(404).json({ error: 'Assignment not found' });
+        res.status(200).json(assignment);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // POST create assignment, requires authentication and teacher role
@@ -36,20 +44,28 @@ router.post('/', requireAuth, requireTeacher, async (req, res) => {
 
 // PUT update assignment, requires authentication and teacher role
 router.put('/:id', requireAuth, requireTeacher, async (req, res) => {
-    const assignment = await Assignment.findByPk(req.params.id);
-    if (!assignment) return res.status(404).json({ error: 'Assignment not found' });
+    try {
+        const assignment = await Assignment.findByPk(req.params.id);
+        if (!assignment) return res.status(404).json({ error: 'Assignment not found' });
 
-    await assignment.update(req.body);
-    res.status(200).json(assignment);
+        await assignment.update(req.body);
+        res.status(200).json(assignment);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // DELETE assignment, requires authentication and teacher role
 router.delete('/:id', requireAuth, requireTeacher, async (req, res) => {
-    const assignment = await Assignment.findByPk(req.params.id);
-    if (!assignment) return res.status(404).json({ error: 'Assignment not found' });
+    try {
+        const assignment = await Assignment.findByPk(req.params.id);
+        if (!assignment) return res.status(404).json({ error: 'Assignment not found' });
 
-    await assignment.destroy();
-    res.status(200).json({ message: 'Assignment deleted successfully' });
+        await assignment.destroy();
+        res.status(200).json({ message: 'Assignment deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 module.exports = router;

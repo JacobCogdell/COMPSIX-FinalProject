@@ -16,6 +16,8 @@ const courseRoutes = require('./routes/courses');
 const assignmentRoutes = require('./routes/assignments');
 const studySessionRoutes = require('./routes/studySessions');
 
+const { requireAuth } = require('./middleware/auth');
+
 // Logging middleware
 function LogRequest(req, res, next) {
     const timestamp = new Date().toISOString();
@@ -183,6 +185,15 @@ app.post('/api/login', async (req, res) => {
         res.status(500).json({ error: 'Failed to login' });
     }
 });
+
+// POST /api/logout - User logout
+app.post('/api/logout', requireAuth, (req, res) => {
+    // With stateless JWT, logout is handled on the client by deleting the token.
+    res.status(200).json({
+        message: 'Logout successful. Please delete your token on the client.'
+    });
+});
+
 
 // REST API Routes
 app.use('/api/users', userRoutes);

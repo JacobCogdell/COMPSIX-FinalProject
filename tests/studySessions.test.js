@@ -1,8 +1,12 @@
 const request = require('supertest');
 const app = require('../server');
+const { User } = require('../database/setup');
 
 let studentToken;
+let studentRecord;
 let courseId;
+let teacherToken;
+let teacherRecord;
 
 beforeAll(async () => {
   // Create student
@@ -19,6 +23,7 @@ beforeAll(async () => {
   });
 
   studentToken = login.body.token;
+  studentRecord = await User.findOne({ where: { email: "stud2@example.com" } });
 
   // Create course (teacher required)
   await request(app).post('/api/register').send({
@@ -33,7 +38,8 @@ beforeAll(async () => {
     password: "password123"
   });
 
-  const teacherToken = teacherLogin.body.token;
+  teacherToken = teacherLogin.body.token;
+  teacherRecord = await User.findOne({ where: { email: "teach3@example.com" } });
 
   const course = await request(app)
     .post('/api/courses')
@@ -42,7 +48,7 @@ beforeAll(async () => {
       courseName: "History 101",
       teacherName: "Teacher",
       semester: "Fall",
-      teacherId: 2
+      teacherId: teacherRecord.id
     });
 
   courseId = course.body.id;
@@ -55,7 +61,7 @@ describe('Study Sessions CRUD', () => {
       .post('/api/study-sessions')
       .set('Authorization', `Bearer ${studentToken}`)
       .send({
-        userId: 1,
+        userId: studentRecord.id,
         courseId,
         startTime: "2024-01-01T10:00:00Z",
         endTime: "2024-01-01T11:00:00Z"

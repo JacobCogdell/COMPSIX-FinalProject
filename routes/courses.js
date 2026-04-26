@@ -5,15 +5,23 @@ const { requireAuth, requireTeacher } = require('../middleware/auth');
 
 // GET all courses, requires authentication
 router.get('/', requireAuth, async (req, res) => {
-    const courses = await Course.findAll();
-    res.status(200).json(courses);
+    try {
+        const courses = await Course.findAll();
+        res.status(200).json(courses);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // GET course by ID, requires authentication
 router.get('/:id', requireAuth, async (req, res) => {
-    const course = await Course.findByPk(req.params.id);
-    if (!course) return res.status(404).json({ error: 'Course not found' });
-    res.status(200).json(course);
+    try {
+        const course = await Course.findByPk(req.params.id);
+        if (!course) return res.status(404).json({ error: 'Course not found' });
+        res.status(200).json(course);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // POST create course, requires authentication and teacher role
@@ -35,20 +43,28 @@ router.post('/', requireAuth,requireTeacher, async (req, res) => {
 
 // PUT update course, requires authentication and teacher role
 router.put('/:id', requireAuth, requireTeacher, async (req, res) => {
-    const course = await Course.findByPk(req.params.id);
-    if (!course) return res.status(404).json({ error: 'Course not found' });
+    try {
+        const course = await Course.findByPk(req.params.id);
+        if (!course) return res.status(404).json({ error: 'Course not found' });
 
-    await course.update(req.body);
-    res.status(200).json(course);
+        await course.update(req.body);
+        res.status(200).json(course);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // DELETE course, requires authentication and teacher role
 router.delete('/:id', requireAuth, requireTeacher, async (req, res) => {
-    const course = await Course.findByPk(req.params.id);
-    if (!course) return res.status(404).json({ error: 'Course not found' });
+    try {
+        const course = await Course.findByPk(req.params.id);
+        if (!course) return res.status(404).json({ error: 'Course not found' });
 
-    await course.destroy();
-    res.status(200).json({ message: 'Course deleted successfully' });
+        await course.destroy();
+        res.status(200).json({ message: 'Course deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 module.exports = router;

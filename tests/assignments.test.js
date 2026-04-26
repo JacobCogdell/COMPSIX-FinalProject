@@ -1,5 +1,6 @@
 const request = require('supertest');
 const app = require('../server');
+const { User } = require('../database/setup');
 
 let teacherToken;
 let courseId;
@@ -18,6 +19,8 @@ beforeAll(async () => {
     password: "password123"
   });
 
+  const teacherRecord = await User.findOne({ where: { email: "teach2@example.com" } });
+
   teacherToken = login.body.token;
 
   // Create course
@@ -28,7 +31,7 @@ beforeAll(async () => {
       courseName: "Math 101",
       teacherName: "Teacher",
       semester: "Spring",
-      teacherId: 1
+      teacherId: teacherRecord.id
     });
 
   courseId = course.body.id;

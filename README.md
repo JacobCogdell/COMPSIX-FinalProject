@@ -80,6 +80,19 @@ Response (200):
   user: { id, name, email }
 }
 
+POST /api/logout
+
+Logs out the current user.
+
+Headers:
+Authorization: Bearer <jwt>
+
+Response (200):
+{
+  "message": "Logout successful. Please delete your token on the client."
+}
+
+
 Users Endpoints (Auth Required)
 
 GET /api/users
